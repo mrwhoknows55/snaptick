@@ -10,13 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissState
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SwipeToDismiss
-import androidx.compose.material3.rememberDismissState
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,9 +44,9 @@ fun <T> SwipeActionBox(
 	content: @Composable (T) -> Unit
 ) {
 	var isActionDone by remember { mutableStateOf(false) }
-	val state = rememberDismissState(initialValue = DismissValue.Default,
+	val state: SwipeToDismissBoxState = rememberSwipeToDismissBoxState(
 		confirmValueChange = { dismissValue ->
-			if (dismissValue == DismissValue.DismissedToStart) {
+			if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
 				isActionDone = true
 				true
 			} else {
@@ -60,7 +59,6 @@ fun <T> SwipeActionBox(
 		if (isActionDone) {
 			delay(animationDuration.toLong())
 			onAction(item)
-			state.snapTo(DismissValue.Default)
 		}
 	}
 
@@ -68,11 +66,16 @@ fun <T> SwipeActionBox(
 		visible = !isActionDone,
 		exit = fadeOut(tween(animationDuration))
 	) {
-		SwipeToDismiss(
+		SwipeToDismissBox(
 			state = state,
-			background = { ActionBackground(dismissState = state, bgColor, icon, iconTint) },
-			dismissContent = { content(item) },
-			directions = setOf(DismissDirection.EndToStart)
+			backgroundContent = {
+				ActionBackground(dismissState = state, bgColor, icon, iconTint)
+			},
+			content = {
+				content(item)
+			},
+			enableDismissFromEndToStart = true,
+			enableDismissFromStartToEnd = false
 		)
 	}
 }
@@ -80,7 +83,7 @@ fun <T> SwipeActionBox(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionBackground(
-	dismissState: DismissState,
+	dismissState: SwipeToDismissBoxState,
 	bgColor: Color,
 	icon: ImageVector,
 	iconTint: Color
@@ -88,7 +91,7 @@ fun ActionBackground(
 	var alphaValue = 0f
 	var color = Color.Transparent
 
-	if (dismissState.dismissDirection == DismissDirection.EndToStart) {
+	if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
 		color = bgColor
 		alphaValue = 1.0f
 	}
