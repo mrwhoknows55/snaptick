@@ -3,7 +3,6 @@ package com.vishal2376.snaptick.widget.worker
 import android.content.Context
 import android.util.Log
 import androidx.glance.appwidget.updateAll
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -17,10 +16,8 @@ import com.vishal2376.snaptick.domain.model.Task
 import com.vishal2376.snaptick.widget.SnaptickWidget
 import com.vishal2376.snaptick.widget.SnaptickWidgetStateDefinition
 import com.vishal2376.snaptick.widget.model.toWidgetTask
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.LocalDate
@@ -28,10 +25,9 @@ import java.time.LocalTime
 
 private const val LOGGER = "WIDGET_DATA_WORKER"
 
-@HiltWorker
-class WidgetTaskUpdateDataWorker @AssistedInject constructor(
-	@Assisted private val context: Context,
-	@Assisted private val params: WorkerParameters,
+class WidgetTaskUpdateDataWorker(
+	private val context: Context,
+	params: WorkerParameters,
 	private val taskRepository: TaskRepository,
 ) : CoroutineWorker(context, params) {
 
@@ -39,14 +35,14 @@ class WidgetTaskUpdateDataWorker @AssistedInject constructor(
 		// fetch today's tasks
 		return withContext(Dispatchers.IO) {
 			try {
-				val tasks = taskRepository.getTodayTasks().first()
+				val tasks = taskRepository.getTodayTasks().firstOrNull()
 				val dayOfWeek = LocalDate.now().dayOfWeek.value - 1
 				// get repeatable tasks
-				val incompleteTasks = tasks.filter { task ->
+				val incompleteTasks = tasks?.filter { task ->
 					if (task.isRepeated) task.getRepeatWeekList().contains(dayOfWeek)
 					else true
-				}.filter { !it.isCompleted }.map(Task::toWidgetTask)
-//				val inCompletedTasks = updatedTodayTasks.filter { !it.isCompleted }
+				}?.filter { !it.isCompleted }?.map(Task::toWidgetTask).orEmpty()
+				// val inCompletedTasks = updatedTodayTasks.filter { !it.isCompleted }
 				//update the data for the widget state
 				Log.d(LOGGER, "ALL_TASKS $tasks")
 				Log.d(LOGGER, "FEW_TASKS $incompleteTasks")

@@ -2,7 +2,6 @@ package com.vishal2376.snaptick.worker
 
 import android.content.Context
 import android.util.Log
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
@@ -10,17 +9,14 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.vishal2376.snaptick.data.repositories.TaskRepository
 import com.vishal2376.snaptick.util.Constants
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 
-@HiltWorker
-class RepeatTaskWorker @AssistedInject constructor(
-	@Assisted val context: Context,
-	@Assisted params: WorkerParameters,
+class RepeatTaskWorker(
+	private val context: Context,
+	params: WorkerParameters,
 	private val repository: TaskRepository,
 ) : CoroutineWorker(context, params) {
 

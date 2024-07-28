@@ -2,7 +2,6 @@ plugins {
 	alias(libs.plugins.androidApplication)
 	alias(libs.plugins.kotlin.android)
 	alias(libs.plugins.ksp)
-	alias(libs.plugins.hilt.android)
 	alias(libs.plugins.compose.compiler)
 }
 
@@ -76,12 +75,6 @@ dependencies {
 	implementation(libs.androidx.room.ktx)
 	ksp(libs.androidx.room.compiler)
 
-	//hilt
-	implementation(libs.hilt.android)
-	ksp(libs.hilt.android.compiler)
-	ksp(libs.hilt.compiler)
-	implementation(libs.hilt.work)
-
 	//navigation
 	implementation(libs.androidx.navigation.compose)
 
@@ -117,6 +110,12 @@ dependencies {
 	implementation(libs.androidx.glance.appwidget)
 	implementation(libs.androidx.glance.material3)
 
+	implementation(libs.koin.core)
+	implementation(libs.koin.android)
+	implementation(libs.koin.androidx.workmanager)
+	implementation(libs.koin.compose)
+	implementation(libs.koin.androidx.compose)
+	implementation(libs.koin.androidx.compose.navigation)
 
 	testImplementation(libs.junit)
 	androidTestImplementation(libs.androidx.junit)

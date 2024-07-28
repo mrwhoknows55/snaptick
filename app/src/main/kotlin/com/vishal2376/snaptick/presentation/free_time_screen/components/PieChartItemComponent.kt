@@ -2,7 +2,6 @@ package com.vishal2376.snaptick.presentation.free_time_screen.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +31,6 @@ import com.vishal2376.snaptick.ui.theme.Blue
 import com.vishal2376.snaptick.util.DummyTasks
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PieChartItemComponent(task: Task, itemColor: Color, animDelay: Int = 100) {
 
@@ -70,7 +68,7 @@ fun PieChartItemComponent(task: Task, itemColor: Color, animDelay: Int = 100) {
 			Text(
 				text = task.title,
 				modifier = Modifier
-					.basicMarquee(delayMillis = 1000)
+					.basicMarquee(repeatDelayMillis = 1000)
 					.weight(1f),
 				style = taskTextStyle,
 				color = MaterialTheme.colorScheme.onPrimary,

@@ -2,7 +2,6 @@ package com.vishal2376.snaptick.presentation.home_screen.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
@@ -48,7 +47,6 @@ import com.vishal2376.snaptick.ui.theme.priorityColors
 import com.vishal2376.snaptick.util.DummyTasks
 import java.time.LocalDate
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskComponent(
 	task: Task,
@@ -140,7 +138,7 @@ fun TaskComponent(
 						Text(
 							modifier = Modifier
 								.fillMaxWidth()
-								.basicMarquee(delayMillis = 1000),
+								.basicMarquee(repeatDelayMillis = 1000),
 							text = task.title,
 							style = taskTextStyle,
 							fontWeight = FontWeight.Bold,

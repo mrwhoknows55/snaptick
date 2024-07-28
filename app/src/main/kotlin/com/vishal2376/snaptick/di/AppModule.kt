@@ -1,45 +1,54 @@
 package com.vishal2376.snaptick.di
 
-import android.content.Context
 import androidx.room.Room
+import androidx.work.WorkerFactory
 import com.vishal2376.snaptick.data.local.MIGRATION_1_2
 import com.vishal2376.snaptick.data.local.TaskDao
 import com.vishal2376.snaptick.data.local.TaskDatabase
 import com.vishal2376.snaptick.data.repositories.TaskRepository
-import com.vishal2376.snaptick.domain.interactor.AppWidgetInteractor
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import com.vishal2376.snaptick.presentation.viewmodels.TaskViewModel
+import com.vishal2376.snaptick.widget.worker.WidgetTaskUpdateDataWorker
+import com.vishal2376.snaptick.worker.NotificationWorker
+import com.vishal2376.snaptick.worker.RepeatTaskWorker
+import com.vishal2376.snaptick.worker.TaskWorkerFactory
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.workmanager.dsl.worker
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object AppModule {
 
-	@Provides
-	@Singleton
-	fun providesLocalDatabase(@ApplicationContext context: Context): TaskDatabase {
-		return Room.databaseBuilder(context, TaskDatabase::class.java, "local_db")
-			.fallbackToDestructiveMigration()
-			.addMigrations(MIGRATION_1_2)
-			.build()
+val appModule = module {
+	single<TaskDatabase> {
+		Room.databaseBuilder(context = androidContext(), TaskDatabase::class.java, "local_db")
+			.fallbackToDestructiveMigration().addMigrations(MIGRATION_1_2).build()
 	}
 
-	@Provides
-	@Singleton
-	fun providesTaskDao(db: TaskDatabase): TaskDao {
-		return db.taskDao()
+	single<TaskDao> {
+		get<TaskDatabase>().taskDao()
 	}
 
-	@Provides
-	@Singleton
-	fun providesTaskRepository(
-		dao: TaskDao,
-		widgetInteract: AppWidgetInteractor
-	): TaskRepository {
-		return TaskRepository(dao, widgetInteract)
+	single<TaskRepository> {
+		TaskRepository(dao = get(), interactor = get())
 	}
 
+	viewModel<TaskViewModel> { TaskViewModel(get()) }
+
+	factory<WorkerFactory> { TaskWorkerFactory(get()) }
+
+	worker<RepeatTaskWorker> {
+		RepeatTaskWorker(
+			context = androidContext(), params = get(), repository = get()
+		)
+	}
+	worker<WidgetTaskUpdateDataWorker> {
+		WidgetTaskUpdateDataWorker(
+			context = androidContext(), params = get(), taskRepository = get()
+		)
+	}
+
+	worker<NotificationWorker> {
+		NotificationWorker(
+			context = androidContext(), params = get()
+		)
+	}
 }

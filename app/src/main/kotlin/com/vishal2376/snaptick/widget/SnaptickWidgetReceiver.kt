@@ -5,16 +5,14 @@ import android.util.Log
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import com.vishal2376.snaptick.domain.interactor.AppWidgetInteractor
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.java.KoinJavaComponent.inject
 
 private const val LOGGER_TAG = "GLANCE_APP_WIDGET"
 
-@AndroidEntryPoint
 class SnaptickWidgetReceiver : GlanceAppWidgetReceiver() {
 
-	@Inject
-	lateinit var interceptor: AppWidgetInteractor
+	private val interceptor: AppWidgetInteractor by inject(AppWidgetInteractor::class.java)
+
 
 	override val glanceAppWidget: GlanceAppWidget
 		get() = SnaptickWidget

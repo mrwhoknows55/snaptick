@@ -28,7 +28,6 @@ import com.vishal2376.snaptick.util.openUrl
 import com.vishal2376.snaptick.util.shareApp
 import com.vishal2376.snaptick.util.updateLocale
 import com.vishal2376.snaptick.worker.NotificationWorker
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -36,10 +35,8 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-@HiltViewModel
-class TaskViewModel @Inject constructor(private val repository: TaskRepository) : ViewModel() {
+class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
 	var appState by mutableStateOf(MainState())
 	private var deletedTask: Task? = null

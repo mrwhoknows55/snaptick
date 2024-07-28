@@ -6,22 +6,12 @@ import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
 import com.vishal2376.snaptick.data.repositories.TaskRepository
 import com.vishal2376.snaptick.domain.interactor.AppWidgetInteractor
-import dagger.hilt.EntryPoint
-import dagger.hilt.EntryPoints
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import org.koin.java.KoinJavaComponent.inject
 
 class OnTaskClickedCallback : ActionCallback {
 
-	@EntryPoint
-	@InstallIn(SingletonComponent::class)
-	interface GlanceActionEntryPoint {
-
-		fun taskRepository(): TaskRepository
-
-		fun glanceInterceptor(): AppWidgetInteractor
-
-	}
+	private val taskRepository: TaskRepository by inject(TaskRepository::class.java)
+	private val glanceInterceptor: AppWidgetInteractor by inject(AppWidgetInteractor::class.java)
 
 	override suspend fun onAction(
 		context: Context,
@@ -30,15 +20,11 @@ class OnTaskClickedCallback : ActionCallback {
 	) {
 		val taskId: Int = parameters[parameterTaskId] ?: -1
 
-		val entryPoint =
-			EntryPoints.get(context.applicationContext, GlanceActionEntryPoint::class.java)
-		val taskRepository = entryPoint.taskRepository()
-
 		val task = taskRepository.getTaskById(taskId)
 		val updatedTask = task.copy(isCompleted = !task.isCompleted)
 		// update the task
 		taskRepository.updateTask(updatedTask)
 
-		entryPoint.glanceInterceptor().enqueueWidgetDataWorker()
+		glanceInterceptor.enqueueWidgetDataWorker()
 	}
 }

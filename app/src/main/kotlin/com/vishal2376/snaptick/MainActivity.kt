@@ -3,19 +3,17 @@ package com.vishal2376.snaptick
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.vishal2376.snaptick.presentation.common.CustomSnackBar
 import com.vishal2376.snaptick.presentation.navigation.AppNavigation
 import com.vishal2376.snaptick.presentation.viewmodels.TaskViewModel
 import com.vishal2376.snaptick.ui.theme.SnaptickTheme
 import com.vishal2376.snaptick.util.NotificationHelper
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-	private val taskViewModel by viewModels<TaskViewModel>()
+	private val taskViewModel: TaskViewModel by viewModel()
 	private lateinit var notificationHelper: NotificationHelper
 
 	override fun onCreate(savedInstanceState: Bundle?) {
